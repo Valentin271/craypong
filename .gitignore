@@ -1,0 +1,8 @@
+# JetBrains
+.idea
+cmake-build*
+
+# Executables
+pong
+*.exe
+*.out
