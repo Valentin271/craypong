@@ -1,10 +1,7 @@
 #include "raylib.h"
 
-#define WINDOW_WIDTH 800
-#define WINDOW_HEIGHT 450
-
-#define PLAYER_SPEED 5.0f
-#define BALLRADIUS 10.0f
+#include "config.h"
+#include "bot.h"
 
 
 typedef struct Player {
@@ -12,9 +9,6 @@ typedef struct Player {
     unsigned short score;
     bool colliding;
 } Player;
-
-
-static const Vector2 playerSize = {10.0f, 80.0f};
 
 
 int main()
@@ -61,8 +55,11 @@ int main()
         // PLayer mouvement
         if (IsKeyDown(KEY_W) || IsKeyDown(KEY_Z)) p1.position.y -= PLAYER_SPEED;
         if (IsKeyDown(KEY_S)) p1.position.y += PLAYER_SPEED;
-        if (IsKeyDown(KEY_UP)) p2.position.y -= PLAYER_SPEED;
-        if (IsKeyDown(KEY_DOWN)) p2.position.y += PLAYER_SPEED;
+        // TODO: Choose between AI and 2P
+//        if (IsKeyDown(KEY_UP)) p2.position.y -= PLAYER_SPEED;
+//        if (IsKeyDown(KEY_DOWN)) p2.position.y += PLAYER_SPEED;
+
+        p2.position.y += PLAYER_SPEED*bot(ballPosition, p2.position);
 
         if (p1.position.y < 0) p1.position.y = 0;
         if (p1.position.y + playerSize.y > GetScreenHeight()) p1.position.y = GetScreenHeight() - playerSize.y;
