@@ -76,9 +76,14 @@ int main()
                 (Rectangle) {p2.position.x, p2.position.y, playerSize.x, playerSize.y}
         );
 
-        if (p1.colliding || p2.colliding) {
+        if (p1.colliding) {
             PlaySound(bip);
             ballSpeed.x *= -1.0f;
+            ballPosition.x = p1.position.x + playerSize.x + BALLRADIUS;
+        } else if (p2.colliding) {
+            PlaySound(bip);
+            ballSpeed.x *= -1.0f;
+            ballPosition.x = p2.position.x - BALLRADIUS;
         }
 
         // Ball mouvement
