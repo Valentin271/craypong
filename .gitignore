@@ -4,5 +4,6 @@ cmake-build*
 
 # Executables
 pong
+craypong
 *.exe
 *.out

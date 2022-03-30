@@ -1,4 +1,4 @@
-# Pong
+# CrayPong
 
 ![Pong](screenshots/main_view.png "Pong")
 
