@@ -1,4 +1,3 @@
-#include <stdio.h>
 #include "raylib.h"
 
 #include "config.h"
@@ -40,6 +39,7 @@ int TextCenterY(int fontsize);
 void MenuScreen();
 
 static MODE mode = MODE_NONE;
+static unsigned long long frameCounter = 1;  // NOTE: 1 to avoid modulos being applied right at the start
 
 int main()
 {
@@ -125,7 +125,7 @@ int main()
         if (p2.position.y < 0) p2.position.y = 0;
         if (p2.position.y + playerSize.y > GetScreenHeight()) p2.position.y = GetScreenHeight() - playerSize.y;
 
-        // Collisions
+        // Ball collisions with player
         p1.colliding = CheckCollisionCircleRec(
                 ballPosition, BALLRADIUS,
                 (Rectangle) {p1.position.x, p1.position.y, playerSize.x, playerSize.y}
@@ -149,19 +149,20 @@ int main()
         ballPosition.x += ballSpeed.x;
         ballPosition.y += ballSpeed.y;
 
-        // Check walls collision for bouncing
+        // Check walls collision for score
         if ((ballPosition.x >= (GetScreenWidth() - BALLRADIUS))) {
             ++p1.score;
             ballPosition = (Vector2) {GetScreenWidth()/2.0f, GetScreenHeight()/2.0f};
-            ballSpeed.x *= -1.0f;
+            ballSpeed = (Vector2) {-BALL_SPEED, BALL_SPEED};
             pauseFrames = POINT_WAIT_FRAME;
         } else if (ballPosition.x <= BALLRADIUS) {
             ++p2.score;
             ballPosition = (Vector2) {GetScreenWidth()/2.0f, GetScreenHeight()/2.0f};
-            ballSpeed.x *= -1.0f;
+            ballSpeed = (Vector2) {BALL_SPEED, BALL_SPEED};
             pauseFrames = POINT_WAIT_FRAME;
         }
 
+        // Check walls collision for bouncing
         if ((ballPosition.y >= (GetScreenHeight() - BALLRADIUS)) || (ballPosition.y <= BALLRADIUS)) {
             PlaySound(wallBeep);
             ballSpeed.y *= -1.0f;
@@ -205,6 +206,14 @@ int main()
 
         EndDrawing();
         //-----------------------------------------------------
+
+        // Increase speed periodically
+        if (frameCounter%SPEED_INCREASE_INTERVAL == 0) {
+            ballSpeed.x += ballSpeed.x > 0 ? 1.0f : -1.0f;
+            ballSpeed.y += ballSpeed.y > 0 ? 1.0f : -1.0f;
+        }
+
+        ++frameCounter;
     }
 
     // De-Initialization

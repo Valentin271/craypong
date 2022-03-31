@@ -10,8 +10,12 @@
 
 // Game
 
-#define BALLRADIUS 10.0f
 #define POINT_WAIT_FRAME 50
+#define SPEED_INCREASE_INTERVAL 1800  // 60fps * 30s = 1800 frames
+
+// Ball
+#define BALLRADIUS 10.0f
+#define BALL_SPEED 5.0f
 
 // Player
 
