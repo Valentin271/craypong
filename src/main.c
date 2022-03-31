@@ -218,6 +218,8 @@ int main()
 
     // De-Initialization
     //---------------------------------------------------------
+    UnloadSound(playerBeep);
+    UnloadSound(wallBeep);
     CloseAudioDevice();
     CloseWindow();        // Close window and OpenGL context
     //----------------------------------------------------------
