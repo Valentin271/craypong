@@ -11,6 +11,12 @@ typedef struct Player {
     bool colliding;
 } Player;
 
+typedef enum MODE {
+    MODE_1PLAYER,
+    MODE_2PLAYERS,
+    MODE_NONE
+} MODE;
+
 /**
  * Computes the screen center in X for text with fontsize.
  *
@@ -27,6 +33,13 @@ int TextCenterX(const char *text, int fontsize);
  * @return The Y coordinate to center the text
  */
 int TextCenterY(int fontsize);
+
+/**
+ * Displays and handles the logic for the menu screen.
+ */
+void MenuScreen();
+
+static MODE mode = MODE_NONE;
 
 int main()
 {
@@ -62,6 +75,11 @@ int main()
     // Main game loop
     while (!WindowShouldClose())    // Detect window close button or ESC key
     {
+        if (mode == MODE_NONE) {
+            MenuScreen();
+            continue;
+        }
+
         // Reset
         //-----------------------------------------------------
         p1.colliding = false;
@@ -90,11 +108,16 @@ int main()
         // PLayer mouvement
         if (IsKeyDown(KEY_W) || IsKeyDown(KEY_Z)) p1.position.y -= PLAYER_SPEED;
         if (IsKeyDown(KEY_S)) p1.position.y += PLAYER_SPEED;
-        // TODO: Choose between AI and 2P
-//        if (IsKeyDown(KEY_UP)) p2.position.y -= PLAYER_SPEED;
-//        if (IsKeyDown(KEY_DOWN)) p2.position.y += PLAYER_SPEED;
 
-        p2.position.y += PLAYER_SPEED*bot(ballPosition, p2.position);
+        switch (mode) {
+            case MODE_1PLAYER:
+                p2.position.y += PLAYER_SPEED*bot(ballPosition, p2.position);
+                break;
+            case MODE_2PLAYERS:
+                if (IsKeyDown(KEY_UP)) p2.position.y -= PLAYER_SPEED;
+                if (IsKeyDown(KEY_DOWN)) p2.position.y += PLAYER_SPEED;
+                break;
+        }
 
         if (p1.position.y < 0) p1.position.y = 0;
         if (p1.position.y + playerSize.y > GetScreenHeight()) p1.position.y = GetScreenHeight() - playerSize.y;
@@ -198,4 +221,43 @@ int TextCenterX(const char *text, int fontsize)
 int TextCenterY(int fontsize)
 {
     return GetScreenHeight()/2 - fontsize/2;
+}
+
+void MenuScreen()
+{
+    static MODE selected = MODE_1PLAYER;
+
+    if (
+            IsKeyPressed(KEY_DOWN) ||
+            IsKeyPressed(KEY_UP) ||
+            IsKeyPressed(KEY_W) ||
+            IsKeyPressed(KEY_Z) ||
+            IsKeyPressed(KEY_S)
+            ) {
+        selected = selected == MODE_1PLAYER ? MODE_2PLAYERS : MODE_1PLAYER;
+    }
+
+    if (IsKeyPressed(KEY_ENTER)) {
+        mode = selected;
+    }
+
+    BeginDrawing();
+    ClearBackground(BLACK);
+
+    DrawText(
+            "1 PLAYER",
+            TextCenterX("1 PLAYER", 50),
+            GetScreenHeight()/3 - 25,
+            50,
+            selected == MODE_1PLAYER ? WHITE : GRAY
+    );
+    DrawText(
+            "2 PLAYERS",
+            TextCenterX("2 PLAYERS", 50),
+            2*GetScreenHeight()/3 - 25,
+            50,
+            selected == MODE_2PLAYERS ? WHITE : GRAY
+    );
+
+    EndDrawing();
 }
