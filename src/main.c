@@ -69,7 +69,8 @@ int main()
     Vector2 ballPosition = {GetScreenWidth()/2.0f, GetScreenHeight()/2.0f};
     Vector2 ballSpeed = {5.0f, 5.0f};
 
-    const Sound bip = LoadSound("resources/bip.wav");
+    const Sound playerBeep = LoadSound("resources/playerBeep.wav");
+    const Sound wallBeep = LoadSound("resources/wallBeep.wav");
     //----------------------------------------------------------
 
     // Main game loop
@@ -135,11 +136,11 @@ int main()
         );
 
         if (p1.colliding) {
-            PlaySound(bip);
+            PlaySound(playerBeep);
             ballSpeed.x *= -1.0f;
             ballPosition.x = p1.position.x + playerSize.x + BALLRADIUS;
         } else if (p2.colliding) {
-            PlaySound(bip);
+            PlaySound(playerBeep);
             ballSpeed.x *= -1.0f;
             ballPosition.x = p2.position.x - BALLRADIUS;
         }
@@ -161,7 +162,10 @@ int main()
             pauseFrames = POINT_WAIT_FRAME;
         }
 
-        if ((ballPosition.y >= (GetScreenHeight() - BALLRADIUS)) || (ballPosition.y <= BALLRADIUS))ballSpeed.y *= -1.0f;
+        if ((ballPosition.y >= (GetScreenHeight() - BALLRADIUS)) || (ballPosition.y <= BALLRADIUS)) {
+            PlaySound(wallBeep);
+            ballSpeed.y *= -1.0f;
+        }
 
         if (IsKeyPressed(KEY_F3)) debugMenu = !debugMenu;
         //-----------------------------------------------------
