@@ -10,6 +10,22 @@ typedef struct Player {
     bool colliding;
 } Player;
 
+/**
+ * Computes the screen center in X for text with fontsize.
+ *
+ * @param text Text to center
+ * @param fontsize Size of the font
+ * @return The X coordinate to center the text
+ */
+int TextCenterX(const char *text, int fontsize);
+
+/**
+ * Computes the screen center in Y for fontsize.
+ *
+ * @param fontsize Size of the font
+ * @return The Y coordinate to center the text
+ */
+int TextCenterY(int fontsize);
 
 int main()
 {
@@ -22,6 +38,7 @@ int main()
     SetTargetFPS(60);               // Set our game to run at 60 frames-per-second
 
     bool debugMenu = false;
+    bool pause = false;
 
     Player p1 = {
             {playerSize.x, GetScreenHeight()/2 - playerSize.y/2},
@@ -51,6 +68,15 @@ int main()
 
         // Update
         //-----------------------------------------------------
+
+        if (IsKeyPressed(KEY_ESCAPE)) pause = !pause;
+
+        if (pause) {
+            BeginDrawing();
+            DrawText("Pause", TextCenterX("Pause", 50), TextCenterY(50), 50, GRAY);
+            EndDrawing();
+            continue;
+        }
 
         // PLayer mouvement
         if (IsKeyDown(KEY_W) || IsKeyDown(KEY_Z)) p1.position.y -= PLAYER_SPEED;
@@ -150,4 +176,15 @@ int main()
     //----------------------------------------------------------
 
     return 0;
+}
+
+
+int TextCenterX(const char *text, int fontsize)
+{
+    return GetScreenWidth()/2 - MeasureText(text, fontsize)/2;
+}
+
+int TextCenterY(int fontsize)
+{
+    return GetScreenHeight()/2 - fontsize/2;
 }
