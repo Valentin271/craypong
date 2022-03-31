@@ -1,3 +1,4 @@
+#include <stdio.h>
 #include "raylib.h"
 
 #include "config.h"
@@ -39,6 +40,7 @@ int main()
 
     bool debugMenu = false;
     bool pause = false;
+    int pauseFrames = 0;
 
     Player p1 = {
             {playerSize.x, GetScreenHeight()/2 - playerSize.y/2},
@@ -75,6 +77,13 @@ int main()
             BeginDrawing();
             DrawText("Pause", TextCenterX("Pause", 50), TextCenterY(50), 50, GRAY);
             EndDrawing();
+            continue;
+        }
+
+        if (pauseFrames > 0) {
+            BeginDrawing();
+            EndDrawing();
+            --pauseFrames;
             continue;
         }
 
@@ -121,10 +130,12 @@ int main()
             ++p1.score;
             ballPosition = (Vector2) {GetScreenWidth()/2.0f, GetScreenHeight()/2.0f};
             ballSpeed.x *= -1.0f;
+            pauseFrames = POINT_WAIT_FRAME;
         } else if (ballPosition.x <= BALLRADIUS) {
             ++p2.score;
             ballPosition = (Vector2) {GetScreenWidth()/2.0f, GetScreenHeight()/2.0f};
             ballSpeed.x *= -1.0f;
+            pauseFrames = POINT_WAIT_FRAME;
         }
 
         if ((ballPosition.y >= (GetScreenHeight() - BALLRADIUS)) || (ballPosition.y <= BALLRADIUS))ballSpeed.y *= -1.0f;
