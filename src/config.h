@@ -1,6 +1,8 @@
 #ifndef CRAYPONG_CONFIG_H
 #define CRAYPONG_CONFIG_H
 
+#include "math.h"
+
 #include "raylib.h"
 
 // Window
@@ -15,13 +17,15 @@
 
 // Ball
 #define BALLRADIUS 10.0f
-#define BALL_SPEED 5.0f
+#define DEFAULT_BALL_SPEED 5.0f;
+static float ballSpeed = DEFAULT_BALL_SPEED;
+#define MAX_BOUNCE_ANGLE (PI/3)  // in radians, 60 degrees
 
 // Player
 
 #define PLAYER_SPEED 5.0f
 
-static const Vector2 playerSize = {10.0f, 80.0f};
+static const Vector2 playerSize = {10.0f, 70.0f};
 
 
 #endif //CRAYPONG_CONFIG_H

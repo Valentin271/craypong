@@ -1,3 +1,6 @@
+#include "stdbool.h"
+#include "math.h"
+
 #include "raylib.h"
 
 #include "config.h"
@@ -38,6 +41,21 @@ int TextCenterY(int fontsize);
  */
 void MenuScreen();
 
+/**
+ * Initialize the ball speed with the given angle in radians.
+ *
+ * @param speed current ball speed
+ * @param angle Angle to init the ball direction
+ */
+void InitBallSpeed(Vector2 *speed, float angle);
+
+/**
+ * Center the player on Y axis.
+ *
+ * @param player Player to center
+ */
+void ResetPlayerPos(Player *player);
+
 static MODE mode = MODE_NONE;
 static unsigned long long frameCounter = 1;  // NOTE: 1 to avoid modulos being applied right at the start
 
@@ -67,7 +85,9 @@ int main()
     };
 
     Vector2 ballPosition = {GetScreenWidth()/2.0f, GetScreenHeight()/2.0f};
-    Vector2 ballSpeed = {5.0f, 5.0f};
+    Vector2 currentBallSpeed;
+    InitBallSpeed(&currentBallSpeed, -PI/4 + GetRandomValue(0, 1)*PI/2);
+    float bounceAngle, ballRelativeY;
 
     const Sound playerBeep = LoadSound("resources/playerBeep.wav");
     const Sound wallBeep = LoadSound("resources/wallBeep.wav");
@@ -120,6 +140,7 @@ int main()
                 break;
         }
 
+        // check out-of-bounds player
         if (p1.position.y < 0) p1.position.y = 0;
         if (p1.position.y + playerSize.y > GetScreenHeight()) p1.position.y = GetScreenHeight() - playerSize.y;
         if (p2.position.y < 0) p2.position.y = 0;
@@ -137,35 +158,57 @@ int main()
 
         if (p1.colliding) {
             PlaySound(playerBeep);
-            ballSpeed.x *= -1.0f;
+
+            ballRelativeY = ballPosition.y - (p1.position.y + playerSize.y/2);
+            bounceAngle = ballRelativeY*MAX_BOUNCE_ANGLE/(playerSize.y/2);
+
+            currentBallSpeed.x = cosf(bounceAngle)*ballSpeed;
+            currentBallSpeed.y = sinf(bounceAngle)*ballSpeed;
+
             ballPosition.x = p1.position.x + playerSize.x + BALLRADIUS;
         } else if (p2.colliding) {
             PlaySound(playerBeep);
-            ballSpeed.x *= -1.0f;
+
+            ballRelativeY = ballPosition.y - (p2.position.y + playerSize.y/2);
+            bounceAngle = ballRelativeY*MAX_BOUNCE_ANGLE/(playerSize.y/2);
+
+            currentBallSpeed.x = -cosf(bounceAngle)*ballSpeed;
+            currentBallSpeed.y = sinf(bounceAngle)*ballSpeed;
+
             ballPosition.x = p2.position.x - BALLRADIUS;
         }
 
         // Ball mouvement
-        ballPosition.x += ballSpeed.x;
-        ballPosition.y += ballSpeed.y;
+        ballPosition.x += currentBallSpeed.x;
+        ballPosition.y += currentBallSpeed.y;
 
         // Check walls collision for score
         if ((ballPosition.x >= (GetScreenWidth() - BALLRADIUS))) {
             ++p1.score;
             ballPosition = (Vector2) {GetScreenWidth()/2.0f, GetScreenHeight()/2.0f};
-            ballSpeed = (Vector2) {-BALL_SPEED, BALL_SPEED};
+
+            ballSpeed = DEFAULT_BALL_SPEED;
+            InitBallSpeed(&currentBallSpeed, 3*PI/4 + GetRandomValue(0, 1)*PI/2);
+
             pauseFrames = POINT_WAIT_FRAME;
+            ResetPlayerPos(&p1);
+            ResetPlayerPos(&p2);
         } else if (ballPosition.x <= BALLRADIUS) {
             ++p2.score;
             ballPosition = (Vector2) {GetScreenWidth()/2.0f, GetScreenHeight()/2.0f};
-            ballSpeed = (Vector2) {BALL_SPEED, BALL_SPEED};
+
+            ballSpeed = DEFAULT_BALL_SPEED;
+            InitBallSpeed(&currentBallSpeed, -PI/4 + GetRandomValue(0, 1)*PI/2);
+
             pauseFrames = POINT_WAIT_FRAME;
+            ResetPlayerPos(&p1);
+            ResetPlayerPos(&p2);
         }
 
         // Check walls collision for bouncing
         if ((ballPosition.y >= (GetScreenHeight() - BALLRADIUS)) || (ballPosition.y <= BALLRADIUS)) {
             PlaySound(wallBeep);
-            ballSpeed.y *= -1.0f;
+            currentBallSpeed.y *= -1.0f;
         }
 
         if (IsKeyPressed(KEY_F3)) debugMenu = !debugMenu;
@@ -209,8 +252,7 @@ int main()
 
         // Increase speed periodically
         if (frameCounter%SPEED_INCREASE_INTERVAL == 0) {
-            ballSpeed.x += ballSpeed.x > 0 ? 1.0f : -1.0f;
-            ballSpeed.y += ballSpeed.y > 0 ? 1.0f : -1.0f;
+            ballSpeed += 1.0f;
         }
 
         ++frameCounter;
@@ -275,4 +317,15 @@ void MenuScreen()
     );
 
     EndDrawing();
+}
+
+void InitBallSpeed(Vector2 *speed, float angle)
+{
+    speed->x = cosf(angle)*ballSpeed;
+    speed->y = sinf(angle)*ballSpeed;
+}
+
+void ResetPlayerPos(Player *player)
+{
+    player->position.y = GetScreenHeight()/2 - playerSize.y/2;
 }
