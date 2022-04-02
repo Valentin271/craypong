@@ -3,7 +3,7 @@
 void UpdatePointScreen()
 {
     if (--pauseFrames <= 0) {
-        screen = SCREEN_POINT;
+        screen = SCREEN_GAME;
     }
 }
 
