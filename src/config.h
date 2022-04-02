@@ -18,7 +18,6 @@
 // Ball
 #define BALLRADIUS 10.0f
 #define DEFAULT_BALL_SPEED 5.0f;
-static float ballSpeed = DEFAULT_BALL_SPEED;
 #define MAX_BOUNCE_ANGLE (PI/3)  // in radians, 60 degrees
 
 // Player

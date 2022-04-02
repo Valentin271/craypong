@@ -2,6 +2,10 @@
 .idea
 cmake-build*
 
+# Build
+build
+*.o
+
 # Executables
 pong
 craypong
