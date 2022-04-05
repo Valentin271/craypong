@@ -33,7 +33,7 @@ PROJECT_NAME          ?= craypong
 PROJECT_VERSION       ?= 1.0
 SOURCES_PATH          ?= src
 
-RAYLIB_PATH           ?= realpath ../raylib
+RAYLIB_PATH           ?= ../raylib
 
 # Locations of raylib.h and libraylib.a/libraylib.so
 # NOTE: Those variables are only used for PLATFORM_OS: LINUX, BSD
@@ -253,8 +253,6 @@ LDFLAGS = -L. -L$(RAYLIB_RELEASE_PATH) -L$(RAYLIB_PATH)/src
 
 ifeq ($(PLATFORM),PLATFORM_DESKTOP)
     ifeq ($(PLATFORM_OS),WINDOWS)
-        # NOTE: The resource .rc file contains windows executable icon and properties
-        LDFLAGS += $(RAYLIB_PATH)/src/raylib.rc.data
         # -Wl,--subsystem,windows hides the console window
         ifeq ($(BUILD_MODE), RELEASE)
             LDFLAGS += -Wl,--subsystem,windows
