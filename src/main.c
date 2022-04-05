@@ -3,6 +3,9 @@
 #include "game.h"
 #include "config.h"
 
+#ifdef PLATFORM_WEB
+#include "emscripten.h"
+#endif
 
 //--------------------------------------------------
 // Shared variables
@@ -24,6 +27,17 @@ float ballSpeed;
 // sounds
 Sound playerBeep, wallBeep;
 
+void UpdateDrawFrame()
+{
+    UpdateFrame();
+
+    BeginDrawing();
+
+    ClearBackground(BLACK);
+    DrawFrame();
+
+    EndDrawing();
+}
 
 int main()
 {
@@ -31,29 +45,24 @@ int main()
     //---------------------------------------------------------
     InitWindow(WINDOW_WIDTH, WINDOW_HEIGHT, "CrayPong");
     InitAudioDevice();
+    InitGame();
 
     SetExitKey(KEY_NULL);
-    SetTargetFPS(60);               // Set our game to run at 60 frames-per-second
 
-    InitGame();
+#ifdef PLATFORM_WEB
+    emscripten_set_main_loop(UpdateDrawFrame, 60, 1);
+#else
+
+    SetTargetFPS(60);               // Set our game to run at 60 frames-per-second
     //----------------------------------------------------------
 
     // Main game loop
     while (!WindowShouldClose())    // Detect window close button or ESC key
     {
-        // Update
-        //-----------------------------------------------------
-        UpdateFrame();
-
-        // Draw
-        //-----------------------------------------------------
-        BeginDrawing();
-
-        ClearBackground(BLACK);
-        DrawFrame();
-
-        EndDrawing();
+        UpdateDrawFrame();
     }
+
+#endif
 
     // De-Initialization
     //---------------------------------------------------------
