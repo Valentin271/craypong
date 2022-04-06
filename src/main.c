@@ -41,6 +41,10 @@ void UpdateDrawFrame()
 
 int main()
 {
+#ifndef DEBUG
+    SetTraceLogLevel(LOG_NONE);
+#endif
+
     // Initialization
     //---------------------------------------------------------
     InitWindow(WINDOW_WIDTH, WINDOW_HEIGHT, "CrayPong");
