@@ -107,14 +107,6 @@ ifeq ($(PLATFORM),PLATFORM_DRM)
     endif
 endif
 
-# RAYLIB_PATH adjustment for LINUX platform
-ifeq ($(PLATFORM),PLATFORM_DESKTOP)
-    ifeq ($(PLATFORM_OS),LINUX)
-        RAYLIB_PREFIX  ?= ..
-        RAYLIB_PATH     = $(realpath $(RAYLIB_PREFIX))
-    endif
-endif
-
 # Default path for raylib on Raspberry Pi
 ifeq ($(PLATFORM),PLATFORM_RPI)
     RAYLIB_PATH        ?= /home/pi/raylib
@@ -125,6 +117,14 @@ endif
 
 # Define raylib release directory for compiled library
 RAYLIB_RELEASE_PATH 	?= $(RAYLIB_PATH)/src
+
+# For some reason, raylib PLATFORM_DESKTOP on Linux outputs .a in raylib, not in src
+# TODO: Change RAYLIB_RELEASE_PATH
+ifeq ($(PLATFORM),PLATFORM_DESKTOP)
+    ifeq ($(PLATFORM_OS),LINUX)
+        RAYLIB_RELEASE_PATH = $(RAYLIB_PATH)
+    endif
+endif
 
 ifeq ($(PLATFORM),PLATFORM_WEB)
     # Emscripten required variables
@@ -227,7 +227,7 @@ endif
 # Define include paths for required headers: INCLUDE_PATHS
 # NOTE: Some external/extras libraries could be required (stb, physac, easings...)
 #------------------------------------------------------------------------------------------------
-INCLUDE_PATHS = -I. -I$(RAYLIB_PATH)/src -I$(RAYLIB_PATH)/src/external -I$(RAYLIB_PATH)/src/extras
+INCLUDE_PATHS = -I$(RAYLIB_PATH)/src -I$(RAYLIB_PATH)/src/external -I$(RAYLIB_PATH)/src/extras
 
 # Define additional directories containing required header files
 ifeq ($(PLATFORM),PLATFORM_DESKTOP)
@@ -249,7 +249,7 @@ endif
 
 # Define library paths containing required libs: LDFLAGS
 #------------------------------------------------------------------------------------------------
-LDFLAGS = -L. -L$(RAYLIB_RELEASE_PATH) -L$(RAYLIB_PATH)/src
+LDFLAGS = -L$(RAYLIB_RELEASE_PATH) -L$(RAYLIB_PATH)/src
 
 ifeq ($(PLATFORM),PLATFORM_DESKTOP)
     ifeq ($(PLATFORM_OS),WINDOWS)
@@ -411,29 +411,33 @@ $(PROJECT_NAME): $(OBJS)
 
 # Clean everything
 clean:
-ifeq ($(PLATFORM),PLATFORM_DESKTOP)
-    ifeq ($(PLATFORM_OS),WINDOWS)
-		del *.o *.exe /s
-    endif
-    ifeq ($(PLATFORM_OS),LINUX)
-		find . -type f -executable -delete
-		rm -fv $(SOURCES_PATH)/*.o $(SOURCES_PATH)/screens/*.o
-    endif
-    ifeq ($(PLATFORM_OS),OSX)
-		find . -type f -perm +ugo+x -delete
-		rm -f $(SOURCES_PATH)/*.o $(SOURCES_PATH)/screens/*.o
-    endif
+ifeq ($(PLATFORM_OS),WINDOWS)
+	del *.o *.exe *.html *.js *.wasm *.data /s
+endif
+ifeq ($(PLATFORM_OS),LINUX)
+	# executable
+	rm -fv $(PROJECT_NAME)
+
+	# web files
+	rm -fv $(PROJECT_NAME).data \
+	 $(PROJECT_NAME).wasm \
+	 $(PROJECT_NAME).js \
+	 $(PROJECT_NAME).html
+
+	# build files
+	rm -fv $(SOURCES_PATH)/*.o $(SOURCES_PATH)/screens/*.o
+endif
+ifeq ($(PLATFORM_OS),OSX)
+	rm -fv $(PROJECT_NAME)
+	rm -f $(SOURCES_PATH)/*.o $(SOURCES_PATH)/screens/*.o
 endif
 ifeq ($(PLATFORM),PLATFORM_RPI)
-	find . -type f -executable -delete
+	rm -fv $(PROJECT_NAME)
 	rm -fv $(SOURCES_PATH)/*.o $(SOURCES_PATH)/screens/*.o
 endif
 ifeq ($(PLATFORM),PLATFORM_DRM)
-	find . -type f -executable -delete
+	rm -fv $(PROJECT_NAME)
 	rm -fv $(SOURCES_PATH)/*.o $(SOURCES_PATH)/screens/*.o
-endif
-ifeq ($(PLATFORM),PLATFORM_WEB)
-	del *.o *.html *.js
 endif
 	@echo Cleaning done
 
