@@ -412,7 +412,7 @@ $(PROJECT_NAME): $(OBJS)
 # Clean everything
 clean:
 ifeq ($(PLATFORM_OS),WINDOWS)
-	del *.o *.exe *.html *.js *.wasm *.data /s
+	del *.o *.exe $(PROJECT_NAME).html *.js *.wasm *.data /s
 endif
 ifeq ($(PLATFORM_OS),LINUX)
 	# executable
@@ -440,4 +440,3 @@ ifeq ($(PLATFORM),PLATFORM_DRM)
 	rm -fv $(SOURCES_PATH)/*.o $(SOURCES_PATH)/screens/*.o
 endif
 	@echo Cleaning done
-
