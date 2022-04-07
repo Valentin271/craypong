@@ -206,8 +206,11 @@ endif
 
 # Additional flags for compiler (if desired)
 #CFLAGS += -Wextra -Wmissing-prototypes -Wstrict-prototypes
+#------------------------------------------------------------------------------------------------
+#  -no-pie  Position Independent Exectuable, register file as executable on linux
 ifeq ($(PLATFORM),PLATFORM_DESKTOP)
     ifeq ($(PLATFORM_OS),LINUX)
+        CFLAGS += -no-pie
         ifeq ($(RAYLIB_LIBTYPE),STATIC)
             CFLAGS += -D_DEFAULT_SOURCE
         endif
