@@ -14,6 +14,8 @@ Nothing more than the base game.
 
 |      | Player 1 *left* | Player 2 *right* |
 |------|-----------------|------------------|
-| Up   | W or Z          | Up arrow         |
-| Down | S               | Down arrow       |
+| Up   | `W` or `Z`      | `Up` arrow       |
+| Down | `S`             | `Down` arrow     |
 
+`F3` can be used to show FPS and frame time (*be careful when using on browsers*).  
+`F12` takes a screenshot (saved in the game's root directory).
