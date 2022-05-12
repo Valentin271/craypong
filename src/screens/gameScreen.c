@@ -37,6 +37,12 @@ void UpdateGameScreen()
         p1.position.y += PLAYER_SPEED;
     }
 
+#ifdef PLATFORM_WEB
+    if (IsGestureDetected(GESTURE_HOLD) || IsGestureDetected(GESTURE_DRAG)) {
+        p1.position.y = GetTouchPosition(0).y - playerSize.y/2;
+    }
+#endif
+
     switch (mode) {
         case MODE_1PLAYER:
             p2.position.y += PLAYER_SPEED*bot(ballPosition, p2.position);
