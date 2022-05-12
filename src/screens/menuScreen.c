@@ -7,12 +7,18 @@ void UpdateMenuScreen()
             IsKeyPressed(KEY_UP) ||
             IsKeyPressed(KEY_W) ||
             IsKeyPressed(KEY_Z) ||
-            IsKeyPressed(KEY_S)
+            IsKeyPressed(KEY_S) ||
+            IsGamepadButtonPressed(0, GAMEPAD_BUTTON_LEFT_FACE_DOWN) ||
+            IsGamepadButtonPressed(0, GAMEPAD_BUTTON_LEFT_FACE_UP)
             ) {
         mode = mode == MODE_1PLAYER ? MODE_2PLAYERS : MODE_1PLAYER;
     }
 
-    if (IsKeyPressed(KEY_ENTER)) {
+    if (
+            IsKeyPressed(KEY_ENTER) ||
+            IsGamepadButtonPressed(0, GAMEPAD_BUTTON_RIGHT_FACE_DOWN) ||
+            IsGamepadButtonPressed(1, GAMEPAD_BUTTON_RIGHT_FACE_DOWN)
+            ) {
         screen = SCREEN_GAME;
     }
 }
